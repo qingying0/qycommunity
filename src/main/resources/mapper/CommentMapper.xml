@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.github.qingying0.community.mapper.CommentMapper" >
+
+    <resultMap id="commentDTOMap" type="com.github.qingying0.community.dto.CommentDTO">
+        <result column="id" property="id"/>
+        <result column="user_id" property="userId"/>
+        <result column="entity_type" property="entityType"/>
+        <result column="entity_id" property="entityId"/>
+        <result column="target_id" property="targetId"/>
+        <result column="status" property="status"/>
+        <result column="create_time" property="createTime"/>
+        <result column="content" property="content"/>
+        <result column="username" property="username"/>
+        <result column="header_url" property="headerUrl"/>
+        <collection column="id" property="listReply" select="com.github.qingying0.community.mapper.CommentMapper.selectReplyByCommentId"></collection>
+    </resultMap>
+    <resultMap id="replyDTOMap" type="com.github.qingying0.community.dto.ReplyDTO">
+        <result column="id" property="id"/>
+        <result column="user_id" property="userId"/>
+        <result column="entity_type" property="entityType"/>
+        <result column="entity_id" property="entityId"/>
+        <result column="target_id" property="targetId"/>
+        <result column="target_name" property="targetName"/>
+        <result column="status" property="status"/>
+        <result column="create_time" property="createTime"/>
+        <result column="content" property="content"/>
+        <result column="username" property="username"/>
+        <result column="header_url" property="headerUrl"/>
+    </resultMap>
+    <select id="selectByQuestionId" resultMap="commentDTOMap">
+        SELECT c.*,
+        u.`username`,
+        u.`header_url`
+        FROM comment AS c
+        LEFT JOIN users AS u
+        ON c.`user_id` = u.`id`
+        WHERE c.`entity_type` = 1 AND c.`entity_id` = #{questionId}
+        ORDER BY c.`create_time`
+    </select>
+    <select id="selectReplyByCommentId" resultMap="replyDTOMap">
+        SELECT c.*,
+        u1.`username`,
+        u1.`header_url`,
+        u2.`username` AS target_name
+        FROM `comment` AS c
+        LEFT JOIN users AS u1
+        ON c.`user_id` = u1.`id`
+        LEFT JOIN users AS u2
+        ON c.`target_id` =u2.`id`
+        WHERE c.`entity_type` = 2 AND c.`entity_id` = #{commentId}
+        ORDER BY c.`create_time`
+    </select>
+
+
+</mapper>

@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.github.qingying0.community.mapper.QuestionMapper">
+    <resultMap id="QuestionDTOMap" type="com.github.qingying0.community.dto.QuestionDTO">
+        <id column="id" property="id"/>
+        <result column="title" property="title"/>
+        <result column="type" property="type"/>
+        <result column="status" property="status"/>
+        <result column="create_Time" property="createTime"/>
+        <result column="comment_count" property="commentCount"/>
+        <result column="score" property="score"/>
+        <result column="content" property="content"/>
+        <result column="username" property="username"/>
+        <result column="header_url" property="headerUrl"/>
+        <result column="tags" property="tags"/>
+        <result column="user_id" property="userId"/>
+    </resultMap>
+    <update id="updateScoreById">
+        UPDATE question
+        SET score = #{score}
+        WHERE id = #{questionId}
+    </update>
+    <select id="selectNewQuestion" resultMap="QuestionDTOMap">
+        SELECT q.*,
+        u.`username`,
+        u.`header_url`,
+        u.`id` as user_id
+        FROM question AS q
+        LEFT JOIN users AS u
+        ON q.`user_id` = u.`id`
+        ORDER BY q.`create_time` DESC
+    </select>
+    <select id="selectById" resultMap="QuestionDTOMap">
+        SELECT q.*,
+        u.`username`,
+        u.`header_url`,
+        u.`id` as user_id
+        FROM question AS q
+        LEFT JOIN users AS u
+        ON q.`user_id` = u.`id`
+        WHERE q.`id` = ${questionId};
+    </select>
+    <select id="selectHotQuestion" resultType="com.github.qingying0.community.entity.Question">
+        SELECT *
+        FROM question
+        ORDER BY score DESC
+        LIMIT 0, 5;
+    </select>
+</mapper>
